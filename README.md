@@ -12,9 +12,5 @@ Installation instructions and a quick introduction is available in
 This library is distributed under the terms of the zlib license,
 available in [LICENSE.txt](LICENSE.txt).
 
-Enjoy!
-
-Sam Lantinga (slouken@libsdl.org)
-
 Few Modifications have been made.
 This is not the Original Source. 
