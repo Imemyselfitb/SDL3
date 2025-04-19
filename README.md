@@ -15,3 +15,6 @@ available in [LICENSE.txt](LICENSE.txt).
 Enjoy!
 
 Sam Lantinga (slouken@libsdl.org)
+
+Few Modifications have been made.
+This is not the Original Source. 
