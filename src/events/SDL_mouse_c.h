@@ -87,13 +87,9 @@ typedef struct
     // Get absolute mouse coordinates. (x) and (y) are never NULL and set to zero before call.
     SDL_MouseButtonFlags (*GetGlobalMouseState)(float *x, float *y);
 
-    // Platform-specific system mouse transform applied in relative mode
-    SDL_MouseMotionTransformCallback ApplySystemScale;
+    // Platform-specific system mouse transform
+    void (*ApplySystemScale)(void *internal, Uint64 timestamp, SDL_Window *window, SDL_MouseID mouseID, float *x, float *y);
     void *system_scale_data;
-
-    // User-defined mouse input transform applied in relative mode
-    SDL_MouseMotionTransformCallback InputTransform;
-    void *input_transform_data;
 
     // integer mode data
     Uint8 integer_mode_flags; // 1 to enable mouse quantization, 2 to enable wheel quantization
@@ -168,9 +164,6 @@ extern void SDL_AddMouse(SDL_MouseID mouseID, const char *name, bool send_event)
 
 // A mouse has been removed from the system
 extern void SDL_RemoveMouse(SDL_MouseID mouseID, bool send_event);
-
-// Set or update the name of a mouse instance.
-extern void SDL_SetMouseName(SDL_MouseID mouseID, const char *name);
 
 // Get the mouse state structure
 extern SDL_Mouse *SDL_GetMouse(void);

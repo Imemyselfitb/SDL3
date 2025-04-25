@@ -105,6 +105,8 @@ typedef enum SDL_TextureAccess
  *
  * \since This enum is available since SDL 3.4.0.
  */
+#ifndef SDL_TextureAddressMode_DEFINED
+#define SDL_TextureAddressMode_DEFINED 1
 typedef enum SDL_TextureAddressMode
 {
     SDL_TEXTURE_ADDRESS_INVALID = -1,
@@ -112,6 +114,7 @@ typedef enum SDL_TextureAddressMode
     SDL_TEXTURE_ADDRESS_CLAMP,  /**< Texture coordinates are clamped to the [0, 1] range */
     SDL_TEXTURE_ADDRESS_WRAP,   /**< The texture is repeated (tiled) */
 } SDL_TextureAddressMode;
+#endif // !SDL_TextureAddressMode_DEFINED
 
 /**
  * How the logical size is mapped to the output.

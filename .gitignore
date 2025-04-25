@@ -1,3 +1,4 @@
+SDL3/
 build/
 build-*/
 !build-scripts/

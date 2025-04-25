@@ -2210,7 +2210,6 @@ static bool SetupWindowData(SDL_VideoDevice *_this, SDL_Window *window, NSWindow
         } else {
             if (window->flags & SDL_WINDOW_TOOLTIP) {
                 [nswindow setIgnoresMouseEvents:YES];
-                [nswindow setAcceptsMouseMovedEvents:NO];
             } else if (window->flags & SDL_WINDOW_POPUP_MENU) {
                 Cocoa_SetKeyboardFocus(window, window->parent == SDL_GetKeyboardFocus());
             }
