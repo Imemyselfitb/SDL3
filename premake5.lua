@@ -23,6 +23,7 @@ project "SDL3"
         "winmm",
         "setupapi"
     }
+	buildoptions { "/MP" }
 
 	-- Files included on all platforms
 	files {
@@ -77,6 +78,7 @@ project "SDL3"
 		"src/joystick/*.c",
 		"src/joystick/virtual/**.c",
 		"src/joystick/hidapi/**.c",
+		"src/joystick/gdk/**.c",
 		"src/hidapi/*.c",
 		
 		-- Haptic

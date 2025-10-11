@@ -1,4 +1,3 @@
-SDL3/
 lib/
 bin-int/
 !include/SDL3/
