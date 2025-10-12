@@ -18,12 +18,11 @@ project "SDL3"
 
 	linkoptions { "/NODEFAULTLIB" }
 	links {
-        "version",
-        "imm32",
-        "winmm",
-        "setupapi"
-    }
-	buildoptions { "/MP" }
+		"version",
+		"imm32",
+		"winmm",
+		"setupapi"
+	}
 
 	-- Files included on all platforms
 	files {
@@ -105,10 +104,13 @@ project "SDL3"
 		"src/loadso/*.c",
 	}
 
+	defines { "SDL_STATIC" }
+
 
 	filter "system:windows"
-		defines { "SDL_STATIC", "_CRT_SECURE_NO_WARNINGS", "SDL_MAIN_HANDLED" }
+		defines { "_CRT_SECURE_NO_WARNINGS", "SDL_MAIN_HANDLED" }
 		systemversion "latest"
+		buildoptions { "/MP" }
 		
 		cdialect "C17"
 		staticruntime "On"
@@ -185,13 +187,12 @@ project "SDL3"
 		}
 
 	filter "system:linux"
-		defines { "SDL_STATIC" }
+		defines { "_GNU_SOURCE", "HAVE_DBUS_DBUS_H=1", "HAVE_STDIO_H=1", "HAVE_XGENERICEVENTCOOKIE=1", "SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS=1" }
 
 		cdialect "C17"
 		staticruntime "On"
 		optimize "On"
 
-		defines { "HAVE_DBUS_DBUS_H=1" }
 		buildoptions { "`pkg-config --cflags dbus-1`" }
 		linkoptions  { "`pkg-config --libs dbus-1`" }
 

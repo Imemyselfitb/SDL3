@@ -21,12 +21,12 @@ endif
 RESCOMP = windres
 TARGETDIR = ../lib
 TARGET = $(TARGETDIR)/libSDL3.a
-DEFINES += -DSDL_STATIC -DHAVE_DBUS_DBUS_H=1
+DEFINES += -DSDL_STATIC -D_GNU_SOURCE -DHAVE_DBUS_DBUS_H=1 -DHAVE_STDIO_H=1 -DHAVE_XGENERICEVENTCOOKIE=1 -DSDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS=1
 INCLUDES += -I../include -I../include/build_config -I../src -I../src/hidapi/hidapi -I../src/hidapi/linux
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
-ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c17 /MP `pkg-config --cflags dbus-1`
-ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 /MP `pkg-config --cflags dbus-1`
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c17 `pkg-config --cflags dbus-1`
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 `pkg-config --cflags dbus-1`
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
 LIBS += -lversion -limm32 -lwinmm -lsetupapi -lpthread -ldl -lm -lrt -lX11 -lwayland-client -lwayland-egl -lxkbcommon -lasound -lpulse
 LDDEPS +=
