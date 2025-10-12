@@ -25,12 +25,12 @@ DEFINES += -DSDL_STATIC
 INCLUDES += -I../include -I../include/build_config -I../src -I../src/hidapi/hidapi -I../src/hidapi/linux
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
-ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c17 /MP
-ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 /MP
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c17 /MP `pkg-config --cflags dbus-1`
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 /MP `pkg-config --cflags dbus-1`
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
 LIBS += -lversion -limm32 -lwinmm -lsetupapi -lpthread -ldl -lm -lrt -lX11 -lwayland-client -lwayland-egl -lxkbcommon -lasound -lpulse
 LDDEPS +=
-ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64 -s /NODEFAULTLIB
+ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64 -s /NODEFAULTLIB `pkg-config --libs dbus-1`
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
 define PREBUILDCMDS
 endef

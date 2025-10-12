@@ -191,6 +191,9 @@ project "SDL3"
 		staticruntime "On"
 		optimize "On"
 
+		buildoptions { "`pkg-config --cflags dbus-1`" }
+		linkoptions  { "`pkg-config --libs dbus-1`" }
+
 		includedirs { "src/hidapi/linux" }
 
 		-- Link against Linux system libraries
