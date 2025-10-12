@@ -21,7 +21,7 @@ endif
 RESCOMP = windres
 TARGETDIR = ../lib
 TARGET = $(TARGETDIR)/libSDL3.a
-DEFINES += -DSDL_STATIC
+DEFINES += -DSDL_STATIC -DHAVE_DBUS_DBUS_H=1
 INCLUDES += -I../include -I../include/build_config -I../src -I../src/hidapi/hidapi -I../src/hidapi/linux
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)

@@ -191,6 +191,7 @@ project "SDL3"
 		staticruntime "On"
 		optimize "On"
 
+		defines { "HAVE_DBUS_DBUS_H=1" }
 		buildoptions { "`pkg-config --cflags dbus-1`" }
 		linkoptions  { "`pkg-config --libs dbus-1`" }
 
