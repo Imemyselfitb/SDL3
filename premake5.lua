@@ -107,8 +107,13 @@ project "SDL3"
 
 
 	filter "system:windows"
-		defines { "SDL_STATIC", "_CRT_SECURE_NO_WARNINGS", "SDL_STATIC", "SDL_MAIN_HANDLED" }
+		defines { "SDL_STATIC", "_CRT_SECURE_NO_WARNINGS", "SDL_MAIN_HANDLED" }
 		systemversion "latest"
+		
+		cdialect "C17"
+		staticruntime "On"
+		systemversion "latest"
+		optimize "On"
 
 		includedirs { "src/hidapi/windows" }
 	
@@ -179,30 +184,47 @@ project "SDL3"
 			"src/loadso/windows/**.c",
 		}
 
-	--[[
 	filter "system:linux"
 		defines { "SDL_STATIC" }
 
+		cdialect "C17"
+		staticruntime "On"
+		optimize "On"
+
 		includedirs { "src/hidapi/linux" }
+
+		-- Link against Linux system libraries
+		links {
+			"pthread",
+			"dl",
+			"m",
+			"rt",
+			"X11",
+			"wayland-client",
+			"wayland-egl",
+			"xkbcommon",
+			"asound",
+			"pulse"
+		}
 
 		files {
 			"src/*.c",
 
 			-- Core
 			"src/core/linux/**.c",
-		
-			-- Video (X11, Wayland, etc.)
+        
+			-- Video (X11, Wayland, KMSDRM, etc.)
 			"src/video/x11/**.c",
 			"src/video/wayland/**.c",
 			"src/video/kmsdrm/**.c",
 			"src/video/dummy/**.c",
-		
+        
 			-- Audio (ALSA, Pulse, etc.)
 			"src/audio/alsa/**.c",
 			"src/audio/pulseaudio/**.c",
 			"src/audio/disk/**.c",
 			"src/audio/dummy/**.c",
-		
+        
 			-- Joystick / HID
 			"src/joystick/linux/**.c",
 			"src/hidapi/linux/**.c",
@@ -225,10 +247,3 @@ project "SDL3"
 			-- Misc
 			"src/loadso/dlopen/**.c",
 		}
-	]]
-	
-	filter "system:windows"
-		cdialect "C17"
-		staticruntime "On"
-		systemversion "latest"
-		optimize "On"

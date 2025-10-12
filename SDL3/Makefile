@@ -20,15 +20,15 @@ endif
 
 RESCOMP = windres
 TARGETDIR = ../lib
-TARGET = $(TARGETDIR)/SDL3.lib
-DEFINES += -D_CRT_SECURE_NO_WARNINGS -DSDL_STATIC -DSDL_MAIN_HANDLED
-INCLUDES += -I../include -I../include/build_config -I../src -I../src/hidapi/hidapi -I../src/hidapi/windows
+TARGET = $(TARGETDIR)/libSDL3.a
+DEFINES += -DSDL_STATIC
+INCLUDES += -I../include -I../include/build_config -I../src -I../src/hidapi/hidapi -I../src/hidapi/linux
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c17 /MP
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 /MP
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-LIBS += -lversion -limm32 -lwinmm -lsetupapi
+LIBS += -lversion -limm32 -lwinmm -lsetupapi -lpthread -ldl -lm -lrt -lX11 -lwayland-client -lwayland-egl -lxkbcommon -lasound -lpulse
 LDDEPS +=
 ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64 -s /NODEFAULTLIB
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
@@ -62,10 +62,10 @@ OBJECTS :=
 
 GENERATED += $(OBJDIR)/SDL.o
 GENERATED += $(OBJDIR)/SDL_RLEaccel.o
+GENERATED += $(OBJDIR)/SDL_alsa_audio.o
 GENERATED += $(OBJDIR)/SDL_assert.o
 GENERATED += $(OBJDIR)/SDL_asyncio.o
 GENERATED += $(OBJDIR)/SDL_asyncio_generic.o
-GENERATED += $(OBJDIR)/SDL_asyncio_windows_ioring.o
 GENERATED += $(OBJDIR)/SDL_atomic.o
 GENERATED += $(OBJDIR)/SDL_audio.o
 GENERATED += $(OBJDIR)/SDL_audiocvt.o
@@ -87,7 +87,6 @@ GENERATED += $(OBJDIR)/SDL_blit_slow.o
 GENERATED += $(OBJDIR)/SDL_bmp.o
 GENERATED += $(OBJDIR)/SDL_camera.o
 GENERATED += $(OBJDIR)/SDL_camera_dummy.o
-GENERATED += $(OBJDIR)/SDL_camera_mediafoundation.o
 GENERATED += $(OBJDIR)/SDL_categories.o
 GENERATED += $(OBJDIR)/SDL_clipboard.o
 GENERATED += $(OBJDIR)/SDL_clipboardevents.o
@@ -96,11 +95,9 @@ GENERATED += $(OBJDIR)/SDL_cpuinfo.o
 GENERATED += $(OBJDIR)/SDL_crc16.o
 GENERATED += $(OBJDIR)/SDL_crc32.o
 GENERATED += $(OBJDIR)/SDL_d3dmath.o
+GENERATED += $(OBJDIR)/SDL_dbus.o
 GENERATED += $(OBJDIR)/SDL_dialog.o
 GENERATED += $(OBJDIR)/SDL_dialog_utils.o
-GENERATED += $(OBJDIR)/SDL_dinputhaptic.o
-GENERATED += $(OBJDIR)/SDL_dinputjoystick.o
-GENERATED += $(OBJDIR)/SDL_directsound.o
 GENERATED += $(OBJDIR)/SDL_diskaudio.o
 GENERATED += $(OBJDIR)/SDL_displayevents.o
 GENERATED += $(OBJDIR)/SDL_drawline.o
@@ -110,22 +107,22 @@ GENERATED += $(OBJDIR)/SDL_dummyaudio.o
 GENERATED += $(OBJDIR)/SDL_dynapi.o
 GENERATED += $(OBJDIR)/SDL_egl.o
 GENERATED += $(OBJDIR)/SDL_error.o
+GENERATED += $(OBJDIR)/SDL_evdev.o
+GENERATED += $(OBJDIR)/SDL_evdev_capabilities.o
+GENERATED += $(OBJDIR)/SDL_evdev_kbd.o
 GENERATED += $(OBJDIR)/SDL_events.o
 GENERATED += $(OBJDIR)/SDL_eventwatch.o
+GENERATED += $(OBJDIR)/SDL_fcitx.o
 GENERATED += $(OBJDIR)/SDL_filesystem.o
 GENERATED += $(OBJDIR)/SDL_fillrect.o
-GENERATED += $(OBJDIR)/SDL_gameinput.o
 GENERATED += $(OBJDIR)/SDL_gameinputjoystick.o
 GENERATED += $(OBJDIR)/SDL_gamepad.o
 GENERATED += $(OBJDIR)/SDL_genericstorage.o
 GENERATED += $(OBJDIR)/SDL_getenv.o
 GENERATED += $(OBJDIR)/SDL_gpu.o
-GENERATED += $(OBJDIR)/SDL_gpu_d3d12.o
-GENERATED += $(OBJDIR)/SDL_gpu_vulkan.o
 GENERATED += $(OBJDIR)/SDL_guid.o
 GENERATED += $(OBJDIR)/SDL_haptic.o
 GENERATED += $(OBJDIR)/SDL_hashtable.o
-GENERATED += $(OBJDIR)/SDL_hid.o
 GENERATED += $(OBJDIR)/SDL_hidapi.o
 GENERATED += $(OBJDIR)/SDL_hidapi_combined.o
 GENERATED += $(OBJDIR)/SDL_hidapi_gamecube.o
@@ -146,14 +143,21 @@ GENERATED += $(OBJDIR)/SDL_hidapi_xbox360w.o
 GENERATED += $(OBJDIR)/SDL_hidapi_xboxone.o
 GENERATED += $(OBJDIR)/SDL_hidapijoystick.o
 GENERATED += $(OBJDIR)/SDL_hints.o
+GENERATED += $(OBJDIR)/SDL_ibus.o
 GENERATED += $(OBJDIR)/SDL_iconv.o
-GENERATED += $(OBJDIR)/SDL_immdevice.o
+GENERATED += $(OBJDIR)/SDL_ime.o
 GENERATED += $(OBJDIR)/SDL_iostream.o
 GENERATED += $(OBJDIR)/SDL_joystick.o
 GENERATED += $(OBJDIR)/SDL_keyboard.o
 GENERATED += $(OBJDIR)/SDL_keymap.o
 GENERATED += $(OBJDIR)/SDL_keysym_to_keycode.o
 GENERATED += $(OBJDIR)/SDL_keysym_to_scancode.o
+GENERATED += $(OBJDIR)/SDL_kmsdrmdyn.o
+GENERATED += $(OBJDIR)/SDL_kmsdrmevents.o
+GENERATED += $(OBJDIR)/SDL_kmsdrmmouse.o
+GENERATED += $(OBJDIR)/SDL_kmsdrmopengles.o
+GENERATED += $(OBJDIR)/SDL_kmsdrmvideo.o
+GENERATED += $(OBJDIR)/SDL_kmsdrmvulkan.o
 GENERATED += $(OBJDIR)/SDL_list.o
 GENERATED += $(OBJDIR)/SDL_locale.o
 GENERATED += $(OBJDIR)/SDL_log.o
@@ -181,10 +185,10 @@ GENERATED += $(OBJDIR)/SDL_pixels.o
 GENERATED += $(OBJDIR)/SDL_power.o
 GENERATED += $(OBJDIR)/SDL_process.o
 GENERATED += $(OBJDIR)/SDL_properties.o
+GENERATED += $(OBJDIR)/SDL_pulseaudio.o
 GENERATED += $(OBJDIR)/SDL_qsort.o
 GENERATED += $(OBJDIR)/SDL_quit.o
 GENERATED += $(OBJDIR)/SDL_random.o
-GENERATED += $(OBJDIR)/SDL_rawinputjoystick.o
 GENERATED += $(OBJDIR)/SDL_rect.o
 GENERATED += $(OBJDIR)/SDL_render.o
 GENERATED += $(OBJDIR)/SDL_render_d3d.o
@@ -221,65 +225,68 @@ GENERATED += $(OBJDIR)/SDL_stretch.o
 GENERATED += $(OBJDIR)/SDL_string.o
 GENERATED += $(OBJDIR)/SDL_strtokr.o
 GENERATED += $(OBJDIR)/SDL_surface.o
-GENERATED += $(OBJDIR)/SDL_surface_utils.o
 GENERATED += $(OBJDIR)/SDL_syscond.o
-GENERATED += $(OBJDIR)/SDL_syscond_cv.o
 GENERATED += $(OBJDIR)/SDL_sysfilesystem.o
-GENERATED += $(OBJDIR)/SDL_sysfsops.o
+GENERATED += $(OBJDIR)/SDL_syshaptic.o
+GENERATED += $(OBJDIR)/SDL_sysjoystick.o
 GENERATED += $(OBJDIR)/SDL_sysloadso.o
-GENERATED += $(OBJDIR)/SDL_syslocale.o
-GENERATED += $(OBJDIR)/SDL_sysmain_callbacks.o
-GENERATED += $(OBJDIR)/SDL_sysmain_runapp.o
 GENERATED += $(OBJDIR)/SDL_sysmutex.o
 GENERATED += $(OBJDIR)/SDL_syspower.o
 GENERATED += $(OBJDIR)/SDL_sysrwlock.o
-GENERATED += $(OBJDIR)/SDL_sysrwlock_srw.o
 GENERATED += $(OBJDIR)/SDL_syssem.o
+GENERATED += $(OBJDIR)/SDL_system_theme.o
 GENERATED += $(OBJDIR)/SDL_systhread.o
-GENERATED += $(OBJDIR)/SDL_systime.o
 GENERATED += $(OBJDIR)/SDL_systimer.o
 GENERATED += $(OBJDIR)/SDL_systls.o
-GENERATED += $(OBJDIR)/SDL_sysurl.o
 GENERATED += $(OBJDIR)/SDL_thread.o
+GENERATED += $(OBJDIR)/SDL_threadprio.o
 GENERATED += $(OBJDIR)/SDL_time.o
 GENERATED += $(OBJDIR)/SDL_timer.o
 GENERATED += $(OBJDIR)/SDL_touch.o
-GENERATED += $(OBJDIR)/SDL_tray.o
 GENERATED += $(OBJDIR)/SDL_tray_utils.o
 GENERATED += $(OBJDIR)/SDL_triangle.o
+GENERATED += $(OBJDIR)/SDL_udev.o
 GENERATED += $(OBJDIR)/SDL_url.o
 GENERATED += $(OBJDIR)/SDL_utils.o
 GENERATED += $(OBJDIR)/SDL_video.o
 GENERATED += $(OBJDIR)/SDL_video_unsupported.o
 GENERATED += $(OBJDIR)/SDL_virtualjoystick.o
 GENERATED += $(OBJDIR)/SDL_vulkan_utils.o
-GENERATED += $(OBJDIR)/SDL_wasapi.o
 GENERATED += $(OBJDIR)/SDL_wave.o
+GENERATED += $(OBJDIR)/SDL_waylandclipboard.o
+GENERATED += $(OBJDIR)/SDL_waylandcolor.o
+GENERATED += $(OBJDIR)/SDL_waylanddatamanager.o
+GENERATED += $(OBJDIR)/SDL_waylanddyn.o
+GENERATED += $(OBJDIR)/SDL_waylandevents.o
+GENERATED += $(OBJDIR)/SDL_waylandkeyboard.o
+GENERATED += $(OBJDIR)/SDL_waylandmessagebox.o
+GENERATED += $(OBJDIR)/SDL_waylandmouse.o
+GENERATED += $(OBJDIR)/SDL_waylandopengles.o
+GENERATED += $(OBJDIR)/SDL_waylandshmbuffer.o
+GENERATED += $(OBJDIR)/SDL_waylandvideo.o
+GENERATED += $(OBJDIR)/SDL_waylandvulkan.o
+GENERATED += $(OBJDIR)/SDL_waylandwindow.o
 GENERATED += $(OBJDIR)/SDL_windowevents.o
-GENERATED += $(OBJDIR)/SDL_windows.o
-GENERATED += $(OBJDIR)/SDL_windows_gaming_input.o
-GENERATED += $(OBJDIR)/SDL_windowsclipboard.o
-GENERATED += $(OBJDIR)/SDL_windowsdialog.o
-GENERATED += $(OBJDIR)/SDL_windowsevents.o
-GENERATED += $(OBJDIR)/SDL_windowsframebuffer.o
-GENERATED += $(OBJDIR)/SDL_windowsgameinput.o
-GENERATED += $(OBJDIR)/SDL_windowshaptic.o
-GENERATED += $(OBJDIR)/SDL_windowsjoystick.o
-GENERATED += $(OBJDIR)/SDL_windowskeyboard.o
-GENERATED += $(OBJDIR)/SDL_windowsmessagebox.o
-GENERATED += $(OBJDIR)/SDL_windowsmodes.o
-GENERATED += $(OBJDIR)/SDL_windowsmouse.o
-GENERATED += $(OBJDIR)/SDL_windowsopengl.o
-GENERATED += $(OBJDIR)/SDL_windowsopengles.o
-GENERATED += $(OBJDIR)/SDL_windowsprocess.o
-GENERATED += $(OBJDIR)/SDL_windowsrawinput.o
-GENERATED += $(OBJDIR)/SDL_windowssensor.o
-GENERATED += $(OBJDIR)/SDL_windowsshape.o
-GENERATED += $(OBJDIR)/SDL_windowsvideo.o
-GENERATED += $(OBJDIR)/SDL_windowsvulkan.o
-GENERATED += $(OBJDIR)/SDL_windowswindow.o
-GENERATED += $(OBJDIR)/SDL_xinput.o
-GENERATED += $(OBJDIR)/SDL_xinputjoystick.o
+GENERATED += $(OBJDIR)/SDL_x11clipboard.o
+GENERATED += $(OBJDIR)/SDL_x11dyn.o
+GENERATED += $(OBJDIR)/SDL_x11events.o
+GENERATED += $(OBJDIR)/SDL_x11framebuffer.o
+GENERATED += $(OBJDIR)/SDL_x11keyboard.o
+GENERATED += $(OBJDIR)/SDL_x11messagebox.o
+GENERATED += $(OBJDIR)/SDL_x11modes.o
+GENERATED += $(OBJDIR)/SDL_x11mouse.o
+GENERATED += $(OBJDIR)/SDL_x11opengl.o
+GENERATED += $(OBJDIR)/SDL_x11opengles.o
+GENERATED += $(OBJDIR)/SDL_x11pen.o
+GENERATED += $(OBJDIR)/SDL_x11settings.o
+GENERATED += $(OBJDIR)/SDL_x11shape.o
+GENERATED += $(OBJDIR)/SDL_x11touch.o
+GENERATED += $(OBJDIR)/SDL_x11video.o
+GENERATED += $(OBJDIR)/SDL_x11vulkan.o
+GENERATED += $(OBJDIR)/SDL_x11window.o
+GENERATED += $(OBJDIR)/SDL_x11xfixes.o
+GENERATED += $(OBJDIR)/SDL_x11xinput2.o
+GENERATED += $(OBJDIR)/SDL_x11xsync.o
 GENERATED += $(OBJDIR)/SDL_yuv.o
 GENERATED += $(OBJDIR)/SDL_yuv_sw.o
 GENERATED += $(OBJDIR)/controller_type.o
@@ -291,12 +298,13 @@ GENERATED += $(OBJDIR)/e_log10.o
 GENERATED += $(OBJDIR)/e_pow.o
 GENERATED += $(OBJDIR)/e_rem_pio2.o
 GENERATED += $(OBJDIR)/e_sqrt.o
+GENERATED += $(OBJDIR)/edid-parse.o
+GENERATED += $(OBJDIR)/hid.o
 GENERATED += $(OBJDIR)/imKStoUCS.o
 GENERATED += $(OBJDIR)/k_cos.o
 GENERATED += $(OBJDIR)/k_rem_pio2.o
 GENERATED += $(OBJDIR)/k_sin.o
 GENERATED += $(OBJDIR)/k_tan.o
-GENERATED += $(OBJDIR)/pch.o
 GENERATED += $(OBJDIR)/s_atan.o
 GENERATED += $(OBJDIR)/s_copysign.o
 GENERATED += $(OBJDIR)/s_cos.o
@@ -310,15 +318,16 @@ GENERATED += $(OBJDIR)/s_modf.o
 GENERATED += $(OBJDIR)/s_scalbn.o
 GENERATED += $(OBJDIR)/s_sin.o
 GENERATED += $(OBJDIR)/s_tan.o
+GENERATED += $(OBJDIR)/xsettings-client.o
 GENERATED += $(OBJDIR)/yuv_rgb_lsx.o
 GENERATED += $(OBJDIR)/yuv_rgb_sse.o
 GENERATED += $(OBJDIR)/yuv_rgb_std.o
 OBJECTS += $(OBJDIR)/SDL.o
 OBJECTS += $(OBJDIR)/SDL_RLEaccel.o
+OBJECTS += $(OBJDIR)/SDL_alsa_audio.o
 OBJECTS += $(OBJDIR)/SDL_assert.o
 OBJECTS += $(OBJDIR)/SDL_asyncio.o
 OBJECTS += $(OBJDIR)/SDL_asyncio_generic.o
-OBJECTS += $(OBJDIR)/SDL_asyncio_windows_ioring.o
 OBJECTS += $(OBJDIR)/SDL_atomic.o
 OBJECTS += $(OBJDIR)/SDL_audio.o
 OBJECTS += $(OBJDIR)/SDL_audiocvt.o
@@ -340,7 +349,6 @@ OBJECTS += $(OBJDIR)/SDL_blit_slow.o
 OBJECTS += $(OBJDIR)/SDL_bmp.o
 OBJECTS += $(OBJDIR)/SDL_camera.o
 OBJECTS += $(OBJDIR)/SDL_camera_dummy.o
-OBJECTS += $(OBJDIR)/SDL_camera_mediafoundation.o
 OBJECTS += $(OBJDIR)/SDL_categories.o
 OBJECTS += $(OBJDIR)/SDL_clipboard.o
 OBJECTS += $(OBJDIR)/SDL_clipboardevents.o
@@ -349,11 +357,9 @@ OBJECTS += $(OBJDIR)/SDL_cpuinfo.o
 OBJECTS += $(OBJDIR)/SDL_crc16.o
 OBJECTS += $(OBJDIR)/SDL_crc32.o
 OBJECTS += $(OBJDIR)/SDL_d3dmath.o
+OBJECTS += $(OBJDIR)/SDL_dbus.o
 OBJECTS += $(OBJDIR)/SDL_dialog.o
 OBJECTS += $(OBJDIR)/SDL_dialog_utils.o
-OBJECTS += $(OBJDIR)/SDL_dinputhaptic.o
-OBJECTS += $(OBJDIR)/SDL_dinputjoystick.o
-OBJECTS += $(OBJDIR)/SDL_directsound.o
 OBJECTS += $(OBJDIR)/SDL_diskaudio.o
 OBJECTS += $(OBJDIR)/SDL_displayevents.o
 OBJECTS += $(OBJDIR)/SDL_drawline.o
@@ -363,22 +369,22 @@ OBJECTS += $(OBJDIR)/SDL_dummyaudio.o
 OBJECTS += $(OBJDIR)/SDL_dynapi.o
 OBJECTS += $(OBJDIR)/SDL_egl.o
 OBJECTS += $(OBJDIR)/SDL_error.o
+OBJECTS += $(OBJDIR)/SDL_evdev.o
+OBJECTS += $(OBJDIR)/SDL_evdev_capabilities.o
+OBJECTS += $(OBJDIR)/SDL_evdev_kbd.o
 OBJECTS += $(OBJDIR)/SDL_events.o
 OBJECTS += $(OBJDIR)/SDL_eventwatch.o
+OBJECTS += $(OBJDIR)/SDL_fcitx.o
 OBJECTS += $(OBJDIR)/SDL_filesystem.o
 OBJECTS += $(OBJDIR)/SDL_fillrect.o
-OBJECTS += $(OBJDIR)/SDL_gameinput.o
 OBJECTS += $(OBJDIR)/SDL_gameinputjoystick.o
 OBJECTS += $(OBJDIR)/SDL_gamepad.o
 OBJECTS += $(OBJDIR)/SDL_genericstorage.o
 OBJECTS += $(OBJDIR)/SDL_getenv.o
 OBJECTS += $(OBJDIR)/SDL_gpu.o
-OBJECTS += $(OBJDIR)/SDL_gpu_d3d12.o
-OBJECTS += $(OBJDIR)/SDL_gpu_vulkan.o
 OBJECTS += $(OBJDIR)/SDL_guid.o
 OBJECTS += $(OBJDIR)/SDL_haptic.o
 OBJECTS += $(OBJDIR)/SDL_hashtable.o
-OBJECTS += $(OBJDIR)/SDL_hid.o
 OBJECTS += $(OBJDIR)/SDL_hidapi.o
 OBJECTS += $(OBJDIR)/SDL_hidapi_combined.o
 OBJECTS += $(OBJDIR)/SDL_hidapi_gamecube.o
@@ -399,14 +405,21 @@ OBJECTS += $(OBJDIR)/SDL_hidapi_xbox360w.o
 OBJECTS += $(OBJDIR)/SDL_hidapi_xboxone.o
 OBJECTS += $(OBJDIR)/SDL_hidapijoystick.o
 OBJECTS += $(OBJDIR)/SDL_hints.o
+OBJECTS += $(OBJDIR)/SDL_ibus.o
 OBJECTS += $(OBJDIR)/SDL_iconv.o
-OBJECTS += $(OBJDIR)/SDL_immdevice.o
+OBJECTS += $(OBJDIR)/SDL_ime.o
 OBJECTS += $(OBJDIR)/SDL_iostream.o
 OBJECTS += $(OBJDIR)/SDL_joystick.o
 OBJECTS += $(OBJDIR)/SDL_keyboard.o
 OBJECTS += $(OBJDIR)/SDL_keymap.o
 OBJECTS += $(OBJDIR)/SDL_keysym_to_keycode.o
 OBJECTS += $(OBJDIR)/SDL_keysym_to_scancode.o
+OBJECTS += $(OBJDIR)/SDL_kmsdrmdyn.o
+OBJECTS += $(OBJDIR)/SDL_kmsdrmevents.o
+OBJECTS += $(OBJDIR)/SDL_kmsdrmmouse.o
+OBJECTS += $(OBJDIR)/SDL_kmsdrmopengles.o
+OBJECTS += $(OBJDIR)/SDL_kmsdrmvideo.o
+OBJECTS += $(OBJDIR)/SDL_kmsdrmvulkan.o
 OBJECTS += $(OBJDIR)/SDL_list.o
 OBJECTS += $(OBJDIR)/SDL_locale.o
 OBJECTS += $(OBJDIR)/SDL_log.o
@@ -434,10 +447,10 @@ OBJECTS += $(OBJDIR)/SDL_pixels.o
 OBJECTS += $(OBJDIR)/SDL_power.o
 OBJECTS += $(OBJDIR)/SDL_process.o
 OBJECTS += $(OBJDIR)/SDL_properties.o
+OBJECTS += $(OBJDIR)/SDL_pulseaudio.o
 OBJECTS += $(OBJDIR)/SDL_qsort.o
 OBJECTS += $(OBJDIR)/SDL_quit.o
 OBJECTS += $(OBJDIR)/SDL_random.o
-OBJECTS += $(OBJDIR)/SDL_rawinputjoystick.o
 OBJECTS += $(OBJDIR)/SDL_rect.o
 OBJECTS += $(OBJDIR)/SDL_render.o
 OBJECTS += $(OBJDIR)/SDL_render_d3d.o
@@ -474,65 +487,68 @@ OBJECTS += $(OBJDIR)/SDL_stretch.o
 OBJECTS += $(OBJDIR)/SDL_string.o
 OBJECTS += $(OBJDIR)/SDL_strtokr.o
 OBJECTS += $(OBJDIR)/SDL_surface.o
-OBJECTS += $(OBJDIR)/SDL_surface_utils.o
 OBJECTS += $(OBJDIR)/SDL_syscond.o
-OBJECTS += $(OBJDIR)/SDL_syscond_cv.o
 OBJECTS += $(OBJDIR)/SDL_sysfilesystem.o
-OBJECTS += $(OBJDIR)/SDL_sysfsops.o
+OBJECTS += $(OBJDIR)/SDL_syshaptic.o
+OBJECTS += $(OBJDIR)/SDL_sysjoystick.o
 OBJECTS += $(OBJDIR)/SDL_sysloadso.o
-OBJECTS += $(OBJDIR)/SDL_syslocale.o
-OBJECTS += $(OBJDIR)/SDL_sysmain_callbacks.o
-OBJECTS += $(OBJDIR)/SDL_sysmain_runapp.o
 OBJECTS += $(OBJDIR)/SDL_sysmutex.o
 OBJECTS += $(OBJDIR)/SDL_syspower.o
 OBJECTS += $(OBJDIR)/SDL_sysrwlock.o
-OBJECTS += $(OBJDIR)/SDL_sysrwlock_srw.o
 OBJECTS += $(OBJDIR)/SDL_syssem.o
+OBJECTS += $(OBJDIR)/SDL_system_theme.o
 OBJECTS += $(OBJDIR)/SDL_systhread.o
-OBJECTS += $(OBJDIR)/SDL_systime.o
 OBJECTS += $(OBJDIR)/SDL_systimer.o
 OBJECTS += $(OBJDIR)/SDL_systls.o
-OBJECTS += $(OBJDIR)/SDL_sysurl.o
 OBJECTS += $(OBJDIR)/SDL_thread.o
+OBJECTS += $(OBJDIR)/SDL_threadprio.o
 OBJECTS += $(OBJDIR)/SDL_time.o
 OBJECTS += $(OBJDIR)/SDL_timer.o
 OBJECTS += $(OBJDIR)/SDL_touch.o
-OBJECTS += $(OBJDIR)/SDL_tray.o
 OBJECTS += $(OBJDIR)/SDL_tray_utils.o
 OBJECTS += $(OBJDIR)/SDL_triangle.o
+OBJECTS += $(OBJDIR)/SDL_udev.o
 OBJECTS += $(OBJDIR)/SDL_url.o
 OBJECTS += $(OBJDIR)/SDL_utils.o
 OBJECTS += $(OBJDIR)/SDL_video.o
 OBJECTS += $(OBJDIR)/SDL_video_unsupported.o
 OBJECTS += $(OBJDIR)/SDL_virtualjoystick.o
 OBJECTS += $(OBJDIR)/SDL_vulkan_utils.o
-OBJECTS += $(OBJDIR)/SDL_wasapi.o
 OBJECTS += $(OBJDIR)/SDL_wave.o
+OBJECTS += $(OBJDIR)/SDL_waylandclipboard.o
+OBJECTS += $(OBJDIR)/SDL_waylandcolor.o
+OBJECTS += $(OBJDIR)/SDL_waylanddatamanager.o
+OBJECTS += $(OBJDIR)/SDL_waylanddyn.o
+OBJECTS += $(OBJDIR)/SDL_waylandevents.o
+OBJECTS += $(OBJDIR)/SDL_waylandkeyboard.o
+OBJECTS += $(OBJDIR)/SDL_waylandmessagebox.o
+OBJECTS += $(OBJDIR)/SDL_waylandmouse.o
+OBJECTS += $(OBJDIR)/SDL_waylandopengles.o
+OBJECTS += $(OBJDIR)/SDL_waylandshmbuffer.o
+OBJECTS += $(OBJDIR)/SDL_waylandvideo.o
+OBJECTS += $(OBJDIR)/SDL_waylandvulkan.o
+OBJECTS += $(OBJDIR)/SDL_waylandwindow.o
 OBJECTS += $(OBJDIR)/SDL_windowevents.o
-OBJECTS += $(OBJDIR)/SDL_windows.o
-OBJECTS += $(OBJDIR)/SDL_windows_gaming_input.o
-OBJECTS += $(OBJDIR)/SDL_windowsclipboard.o
-OBJECTS += $(OBJDIR)/SDL_windowsdialog.o
-OBJECTS += $(OBJDIR)/SDL_windowsevents.o
-OBJECTS += $(OBJDIR)/SDL_windowsframebuffer.o
-OBJECTS += $(OBJDIR)/SDL_windowsgameinput.o
-OBJECTS += $(OBJDIR)/SDL_windowshaptic.o
-OBJECTS += $(OBJDIR)/SDL_windowsjoystick.o
-OBJECTS += $(OBJDIR)/SDL_windowskeyboard.o
-OBJECTS += $(OBJDIR)/SDL_windowsmessagebox.o
-OBJECTS += $(OBJDIR)/SDL_windowsmodes.o
-OBJECTS += $(OBJDIR)/SDL_windowsmouse.o
-OBJECTS += $(OBJDIR)/SDL_windowsopengl.o
-OBJECTS += $(OBJDIR)/SDL_windowsopengles.o
-OBJECTS += $(OBJDIR)/SDL_windowsprocess.o
-OBJECTS += $(OBJDIR)/SDL_windowsrawinput.o
-OBJECTS += $(OBJDIR)/SDL_windowssensor.o
-OBJECTS += $(OBJDIR)/SDL_windowsshape.o
-OBJECTS += $(OBJDIR)/SDL_windowsvideo.o
-OBJECTS += $(OBJDIR)/SDL_windowsvulkan.o
-OBJECTS += $(OBJDIR)/SDL_windowswindow.o
-OBJECTS += $(OBJDIR)/SDL_xinput.o
-OBJECTS += $(OBJDIR)/SDL_xinputjoystick.o
+OBJECTS += $(OBJDIR)/SDL_x11clipboard.o
+OBJECTS += $(OBJDIR)/SDL_x11dyn.o
+OBJECTS += $(OBJDIR)/SDL_x11events.o
+OBJECTS += $(OBJDIR)/SDL_x11framebuffer.o
+OBJECTS += $(OBJDIR)/SDL_x11keyboard.o
+OBJECTS += $(OBJDIR)/SDL_x11messagebox.o
+OBJECTS += $(OBJDIR)/SDL_x11modes.o
+OBJECTS += $(OBJDIR)/SDL_x11mouse.o
+OBJECTS += $(OBJDIR)/SDL_x11opengl.o
+OBJECTS += $(OBJDIR)/SDL_x11opengles.o
+OBJECTS += $(OBJDIR)/SDL_x11pen.o
+OBJECTS += $(OBJDIR)/SDL_x11settings.o
+OBJECTS += $(OBJDIR)/SDL_x11shape.o
+OBJECTS += $(OBJDIR)/SDL_x11touch.o
+OBJECTS += $(OBJDIR)/SDL_x11video.o
+OBJECTS += $(OBJDIR)/SDL_x11vulkan.o
+OBJECTS += $(OBJDIR)/SDL_x11window.o
+OBJECTS += $(OBJDIR)/SDL_x11xfixes.o
+OBJECTS += $(OBJDIR)/SDL_x11xinput2.o
+OBJECTS += $(OBJDIR)/SDL_x11xsync.o
 OBJECTS += $(OBJDIR)/SDL_yuv.o
 OBJECTS += $(OBJDIR)/SDL_yuv_sw.o
 OBJECTS += $(OBJDIR)/controller_type.o
@@ -544,12 +560,13 @@ OBJECTS += $(OBJDIR)/e_log10.o
 OBJECTS += $(OBJDIR)/e_pow.o
 OBJECTS += $(OBJDIR)/e_rem_pio2.o
 OBJECTS += $(OBJDIR)/e_sqrt.o
+OBJECTS += $(OBJDIR)/edid-parse.o
+OBJECTS += $(OBJDIR)/hid.o
 OBJECTS += $(OBJDIR)/imKStoUCS.o
 OBJECTS += $(OBJDIR)/k_cos.o
 OBJECTS += $(OBJDIR)/k_rem_pio2.o
 OBJECTS += $(OBJDIR)/k_sin.o
 OBJECTS += $(OBJDIR)/k_tan.o
-OBJECTS += $(OBJDIR)/pch.o
 OBJECTS += $(OBJDIR)/s_atan.o
 OBJECTS += $(OBJDIR)/s_copysign.o
 OBJECTS += $(OBJDIR)/s_cos.o
@@ -563,6 +580,7 @@ OBJECTS += $(OBJDIR)/s_modf.o
 OBJECTS += $(OBJDIR)/s_scalbn.o
 OBJECTS += $(OBJDIR)/s_sin.o
 OBJECTS += $(OBJDIR)/s_tan.o
+OBJECTS += $(OBJDIR)/xsettings-client.o
 OBJECTS += $(OBJDIR)/yuv_rgb_lsx.o
 OBJECTS += $(OBJDIR)/yuv_rgb_sse.o
 OBJECTS += $(OBJDIR)/yuv_rgb_std.o
@@ -689,7 +707,7 @@ $(OBJDIR)/SDL_mixer.o: ../src/audio/SDL_mixer.c
 $(OBJDIR)/SDL_wave.o: ../src/audio/SDL_wave.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_directsound.o: ../src/audio/directsound/SDL_directsound.c
+$(OBJDIR)/SDL_alsa_audio.o: ../src/audio/alsa/SDL_alsa_audio.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_diskaudio.o: ../src/audio/disk/SDL_diskaudio.c
@@ -698,7 +716,7 @@ $(OBJDIR)/SDL_diskaudio.o: ../src/audio/disk/SDL_diskaudio.c
 $(OBJDIR)/SDL_dummyaudio.o: ../src/audio/dummy/SDL_dummyaudio.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_wasapi.o: ../src/audio/wasapi/SDL_wasapi.c
+$(OBJDIR)/SDL_pulseaudio.o: ../src/audio/pulseaudio/SDL_pulseaudio.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_camera.o: ../src/camera/SDL_camera.c
@@ -707,28 +725,37 @@ $(OBJDIR)/SDL_camera.o: ../src/camera/SDL_camera.c
 $(OBJDIR)/SDL_camera_dummy.o: ../src/camera/dummy/SDL_camera_dummy.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_camera_mediafoundation.o: ../src/camera/mediafoundation/SDL_camera_mediafoundation.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_core_unsupported.o: ../src/core/SDL_core_unsupported.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_gameinput.o: ../src/core/windows/SDL_gameinput.c
+$(OBJDIR)/SDL_dbus.o: ../src/core/linux/SDL_dbus.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_hid.o: ../src/core/windows/SDL_hid.c
+$(OBJDIR)/SDL_evdev.o: ../src/core/linux/SDL_evdev.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_immdevice.o: ../src/core/windows/SDL_immdevice.c
+$(OBJDIR)/SDL_evdev_capabilities.o: ../src/core/linux/SDL_evdev_capabilities.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windows.o: ../src/core/windows/SDL_windows.c
+$(OBJDIR)/SDL_evdev_kbd.o: ../src/core/linux/SDL_evdev_kbd.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_xinput.o: ../src/core/windows/SDL_xinput.c
+$(OBJDIR)/SDL_fcitx.o: ../src/core/linux/SDL_fcitx.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/pch.o: ../src/core/windows/pch.c
+$(OBJDIR)/SDL_ibus.o: ../src/core/linux/SDL_ibus.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_ime.o: ../src/core/linux/SDL_ime.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_system_theme.o: ../src/core/linux/SDL_system_theme.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_threadprio.o: ../src/core/linux/SDL_threadprio.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_udev.o: ../src/core/linux/SDL_udev.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_cpuinfo.o: ../src/cpuinfo/SDL_cpuinfo.c
@@ -738,9 +765,6 @@ $(OBJDIR)/SDL_dialog.o: ../src/dialog/SDL_dialog.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_dialog_utils.o: ../src/dialog/SDL_dialog_utils.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsdialog.o: ../src/dialog/windows/SDL_windowsdialog.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_dynapi.o: ../src/dynapi/SDL_dynapi.c
@@ -800,31 +824,22 @@ $(OBJDIR)/imKStoUCS.o: ../src/events/imKStoUCS.c
 $(OBJDIR)/SDL_filesystem.o: ../src/filesystem/SDL_filesystem.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysfilesystem.o: ../src/filesystem/windows/SDL_sysfilesystem.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysfsops.o: ../src/filesystem/windows/SDL_sysfsops.c
+$(OBJDIR)/SDL_sysfilesystem.o: ../src/filesystem/unix/SDL_sysfilesystem.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_gpu.o: ../src/gpu/SDL_gpu.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_gpu_d3d12.o: ../src/gpu/d3d12/SDL_gpu_d3d12.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_gpu_vulkan.o: ../src/gpu/vulkan/SDL_gpu_vulkan.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_haptic.o: ../src/haptic/SDL_haptic.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_dinputhaptic.o: ../src/haptic/windows/SDL_dinputhaptic.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowshaptic.o: ../src/haptic/windows/SDL_windowshaptic.c
+$(OBJDIR)/SDL_syshaptic.o: ../src/haptic/linux/SDL_syshaptic.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_hidapi.o: ../src/hidapi/SDL_hidapi.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/hid.o: ../src/hidapi/linux/hid.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_asyncio.o: ../src/io/SDL_asyncio.c
@@ -834,9 +849,6 @@ $(OBJDIR)/SDL_iostream.o: ../src/io/SDL_iostream.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_asyncio_generic.o: ../src/io/generic/SDL_asyncio_generic.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_asyncio_windows_ioring.o: ../src/io/windows/SDL_asyncio_windows_ioring.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_gamepad.o: ../src/joystick/SDL_gamepad.c
@@ -908,22 +920,10 @@ $(OBJDIR)/SDL_hidapi_xboxone.o: ../src/joystick/hidapi/SDL_hidapi_xboxone.c
 $(OBJDIR)/SDL_hidapijoystick.o: ../src/joystick/hidapi/SDL_hidapijoystick.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_sysjoystick.o: ../src/joystick/linux/SDL_sysjoystick.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_virtualjoystick.o: ../src/joystick/virtual/SDL_virtualjoystick.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_dinputjoystick.o: ../src/joystick/windows/SDL_dinputjoystick.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_rawinputjoystick.o: ../src/joystick/windows/SDL_rawinputjoystick.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windows_gaming_input.o: ../src/joystick/windows/SDL_windows_gaming_input.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsjoystick.o: ../src/joystick/windows/SDL_windowsjoystick.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_xinputjoystick.o: ../src/joystick/windows/SDL_xinputjoystick.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/e_atan2.o: ../src/libm/e_atan2.c
@@ -1001,40 +1001,25 @@ $(OBJDIR)/s_sin.o: ../src/libm/s_sin.c
 $(OBJDIR)/s_tan.o: ../src/libm/s_tan.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysloadso.o: ../src/loadso/windows/SDL_sysloadso.c
+$(OBJDIR)/SDL_sysloadso.o: ../src/loadso/dlopen/SDL_sysloadso.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_locale.o: ../src/locale/SDL_locale.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_syslocale.o: ../src/locale/windows/SDL_syslocale.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_main_callbacks.o: ../src/main/SDL_main_callbacks.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysmain_callbacks.o: ../src/main/generic/SDL_sysmain_callbacks.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysmain_runapp.o: ../src/main/windows/SDL_sysmain_runapp.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_url.o: ../src/misc/SDL_url.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysurl.o: ../src/misc/windows/SDL_sysurl.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_power.o: ../src/power/SDL_power.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_syspower.o: ../src/power/windows/SDL_syspower.c
+$(OBJDIR)/SDL_syspower.o: ../src/power/linux/SDL_syspower.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_process.o: ../src/process/SDL_process.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsprocess.o: ../src/process/windows/SDL_windowsprocess.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_d3dmath.o: ../src/render/SDL_d3dmath.c
@@ -1136,9 +1121,6 @@ $(OBJDIR)/SDL_shaders_vulkan.o: ../src/render/vulkan/SDL_shaders_vulkan.c
 $(OBJDIR)/SDL_sensor.o: ../src/sensor/SDL_sensor.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowssensor.o: ../src/sensor/windows/SDL_windowssensor.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_crc16.o: ../src/stdlib/SDL_crc16.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
@@ -1196,46 +1178,34 @@ $(OBJDIR)/SDL_steamstorage.o: ../src/storage/steam/SDL_steamstorage.c
 $(OBJDIR)/SDL_thread.o: ../src/thread/SDL_thread.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_syscond.o: ../src/thread/generic/SDL_syscond.c
+$(OBJDIR)/SDL_syscond.o: ../src/thread/pthread/SDL_syscond.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysrwlock.o: ../src/thread/generic/SDL_sysrwlock.c
+$(OBJDIR)/SDL_sysmutex.o: ../src/thread/pthread/SDL_sysmutex.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_syscond_cv.o: ../src/thread/windows/SDL_syscond_cv.c
+$(OBJDIR)/SDL_sysrwlock.o: ../src/thread/pthread/SDL_sysrwlock.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysmutex.o: ../src/thread/windows/SDL_sysmutex.c
+$(OBJDIR)/SDL_syssem.o: ../src/thread/pthread/SDL_syssem.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysrwlock_srw.o: ../src/thread/windows/SDL_sysrwlock_srw.c
+$(OBJDIR)/SDL_systhread.o: ../src/thread/pthread/SDL_systhread.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_syssem.o: ../src/thread/windows/SDL_syssem.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_systhread.o: ../src/thread/windows/SDL_systhread.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_systls.o: ../src/thread/windows/SDL_systls.c
+$(OBJDIR)/SDL_systls.o: ../src/thread/pthread/SDL_systls.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_time.o: ../src/time/SDL_time.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_systime.o: ../src/time/windows/SDL_systime.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_timer.o: ../src/timer/SDL_timer.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_systimer.o: ../src/timer/windows/SDL_systimer.c
+$(OBJDIR)/SDL_systimer.o: ../src/timer/unix/SDL_systimer.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_tray_utils.o: ../src/tray/SDL_tray_utils.c
-	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_tray.o: ../src/tray/windows/SDL_tray.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_RLEaccel.o: ../src/video/SDL_RLEaccel.c
@@ -1313,6 +1283,24 @@ $(OBJDIR)/SDL_nullframebuffer.o: ../src/video/dummy/SDL_nullframebuffer.c
 $(OBJDIR)/SDL_nullvideo.o: ../src/video/dummy/SDL_nullvideo.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_kmsdrmdyn.o: ../src/video/kmsdrm/SDL_kmsdrmdyn.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_kmsdrmevents.o: ../src/video/kmsdrm/SDL_kmsdrmevents.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_kmsdrmmouse.o: ../src/video/kmsdrm/SDL_kmsdrmmouse.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_kmsdrmopengles.o: ../src/video/kmsdrm/SDL_kmsdrmopengles.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_kmsdrmvideo.o: ../src/video/kmsdrm/SDL_kmsdrmvideo.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_kmsdrmvulkan.o: ../src/video/kmsdrm/SDL_kmsdrmvulkan.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_offscreenevents.o: ../src/video/offscreen/SDL_offscreenevents.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
@@ -1331,52 +1319,109 @@ $(OBJDIR)/SDL_offscreenvulkan.o: ../src/video/offscreen/SDL_offscreenvulkan.c
 $(OBJDIR)/SDL_offscreenwindow.o: ../src/video/offscreen/SDL_offscreenwindow.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_surface_utils.o: ../src/video/windows/SDL_surface_utils.c
+$(OBJDIR)/SDL_waylandclipboard.o: ../src/video/wayland/SDL_waylandclipboard.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsclipboard.o: ../src/video/windows/SDL_windowsclipboard.c
+$(OBJDIR)/SDL_waylandcolor.o: ../src/video/wayland/SDL_waylandcolor.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsevents.o: ../src/video/windows/SDL_windowsevents.c
+$(OBJDIR)/SDL_waylanddatamanager.o: ../src/video/wayland/SDL_waylanddatamanager.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsframebuffer.o: ../src/video/windows/SDL_windowsframebuffer.c
+$(OBJDIR)/SDL_waylanddyn.o: ../src/video/wayland/SDL_waylanddyn.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsgameinput.o: ../src/video/windows/SDL_windowsgameinput.c
+$(OBJDIR)/SDL_waylandevents.o: ../src/video/wayland/SDL_waylandevents.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowskeyboard.o: ../src/video/windows/SDL_windowskeyboard.c
+$(OBJDIR)/SDL_waylandkeyboard.o: ../src/video/wayland/SDL_waylandkeyboard.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsmessagebox.o: ../src/video/windows/SDL_windowsmessagebox.c
+$(OBJDIR)/SDL_waylandmessagebox.o: ../src/video/wayland/SDL_waylandmessagebox.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsmodes.o: ../src/video/windows/SDL_windowsmodes.c
+$(OBJDIR)/SDL_waylandmouse.o: ../src/video/wayland/SDL_waylandmouse.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsmouse.o: ../src/video/windows/SDL_windowsmouse.c
+$(OBJDIR)/SDL_waylandopengles.o: ../src/video/wayland/SDL_waylandopengles.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsopengl.o: ../src/video/windows/SDL_windowsopengl.c
+$(OBJDIR)/SDL_waylandshmbuffer.o: ../src/video/wayland/SDL_waylandshmbuffer.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsopengles.o: ../src/video/windows/SDL_windowsopengles.c
+$(OBJDIR)/SDL_waylandvideo.o: ../src/video/wayland/SDL_waylandvideo.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsrawinput.o: ../src/video/windows/SDL_windowsrawinput.c
+$(OBJDIR)/SDL_waylandvulkan.o: ../src/video/wayland/SDL_waylandvulkan.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsshape.o: ../src/video/windows/SDL_windowsshape.c
+$(OBJDIR)/SDL_waylandwindow.o: ../src/video/wayland/SDL_waylandwindow.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsvideo.o: ../src/video/windows/SDL_windowsvideo.c
+$(OBJDIR)/SDL_x11clipboard.o: ../src/video/x11/SDL_x11clipboard.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowsvulkan.o: ../src/video/windows/SDL_windowsvulkan.c
+$(OBJDIR)/SDL_x11dyn.o: ../src/video/x11/SDL_x11dyn.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_windowswindow.o: ../src/video/windows/SDL_windowswindow.c
+$(OBJDIR)/SDL_x11events.o: ../src/video/x11/SDL_x11events.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11framebuffer.o: ../src/video/x11/SDL_x11framebuffer.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11keyboard.o: ../src/video/x11/SDL_x11keyboard.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11messagebox.o: ../src/video/x11/SDL_x11messagebox.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11modes.o: ../src/video/x11/SDL_x11modes.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11mouse.o: ../src/video/x11/SDL_x11mouse.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11opengl.o: ../src/video/x11/SDL_x11opengl.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11opengles.o: ../src/video/x11/SDL_x11opengles.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11pen.o: ../src/video/x11/SDL_x11pen.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11settings.o: ../src/video/x11/SDL_x11settings.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11shape.o: ../src/video/x11/SDL_x11shape.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11touch.o: ../src/video/x11/SDL_x11touch.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11video.o: ../src/video/x11/SDL_x11video.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11vulkan.o: ../src/video/x11/SDL_x11vulkan.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11window.o: ../src/video/x11/SDL_x11window.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11xfixes.o: ../src/video/x11/SDL_x11xfixes.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11xinput2.o: ../src/video/x11/SDL_x11xinput2.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_x11xsync.o: ../src/video/x11/SDL_x11xsync.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/edid-parse.o: ../src/video/x11/edid-parse.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/xsettings-client.o: ../src/video/x11/xsettings-client.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/yuv_rgb_lsx.o: ../src/video/yuv2rgb/yuv_rgb_lsx.c
