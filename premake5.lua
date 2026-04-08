@@ -1,4 +1,5 @@
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+SDL3_deps = {}
 
 project "SDL3"
 	location "SDL3"
@@ -17,13 +18,7 @@ project "SDL3"
 	}
 
 	linkoptions { "/NODEFAULTLIB" }
-	links {
-		"version",
-		"imm32",
-		"winmm",
-		"setupapi"
-	}
-
+	
 	-- Files included on all platforms
 	files {
 		"src/*.c",
@@ -120,7 +115,7 @@ project "SDL3"
 
 		includedirs { "src/hidapi/windows" }
 
-		links {
+		SDL3_deps["windows"] = {
 			-- Core Platform libs
 			"kernel32",
 			"user32",
@@ -221,7 +216,7 @@ project "SDL3"
 		includedirs { "src/hidapi/linux" }
 
 		-- Link against Linux system libraries
-		links {
+		SDL3_deps["linux"] = {
 			-- Core Platform libs
 			"pthread",
 			"dl",

@@ -28,7 +28,7 @@ ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c17 `pkg-config --cflags dbus-1`
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 `pkg-config --cflags dbus-1`
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-LIBS += -lversion -limm32 -lwinmm -lsetupapi -lpthread -ldl -lm -lrt -lX11 -lXext -lXcursor -lXi -lXfixes -lXrandr -lwayland-client -lwayland-egl -lwayland-cursor -lxkbcommon -lasound -lpulse -ludev
+LIBS +=
 LDDEPS +=
 ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64 -s /NODEFAULTLIB `pkg-config --libs dbus-1`
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
