@@ -75,7 +75,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SDL_STATIC;SDL_MAIN_HANDLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SDL_STATIC;_CRT_SECURE_NO_WARNINGS;SDL_MAIN_HANDLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\include;..\include\build_config;..\src;..\src\hidapi\hidapi;..\src\hidapi\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -93,7 +93,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>version.lib;imm32.lib;winmm.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winmm.lib;imm32.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;setupapi.lib;shell32.lib;d3d11.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
@@ -101,7 +101,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SDL_STATIC;SDL_MAIN_HANDLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SDL_STATIC;_CRT_SECURE_NO_WARNINGS;SDL_MAIN_HANDLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\include;..\include\build_config;..\src;..\src\hidapi\hidapi;..\src\hidapi\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -119,7 +119,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>version.lib;imm32.lib;winmm.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winmm.lib;imm32.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;setupapi.lib;shell32.lib;d3d11.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
@@ -127,7 +127,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SDL_STATIC;SDL_MAIN_HANDLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SDL_STATIC;_CRT_SECURE_NO_WARNINGS;SDL_MAIN_HANDLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\include;..\include\build_config;..\src;..\src\hidapi\hidapi;..\src\hidapi\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -145,7 +145,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>version.lib;imm32.lib;winmm.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winmm.lib;imm32.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;setupapi.lib;shell32.lib;d3d11.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
@@ -340,13 +340,25 @@
     <ClCompile Include="..\src\storage\steam\SDL_steamstorage.c" />
     <ClCompile Include="..\src\thread\SDL_thread.c" />
     <ClCompile Include="..\src\thread\generic\SDL_syscond.c" />
+    <ClCompile Include="..\src\thread\generic\SDL_sysmutex.c" />
     <ClCompile Include="..\src\thread\generic\SDL_sysrwlock.c" />
+    <ClCompile Include="..\src\thread\generic\SDL_syssem.c" />
+    <ClCompile Include="..\src\thread\generic\SDL_systhread.c" />
+    <ClCompile Include="..\src\thread\generic\SDL_systls.c" />
     <ClCompile Include="..\src\thread\windows\SDL_syscond_cv.c" />
-    <ClCompile Include="..\src\thread\windows\SDL_sysmutex.c" />
+    <ClCompile Include="..\src\thread\windows\SDL_sysmutex.c">
+      <ObjectFileName>$(IntDir)\SDL_sysmutex1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\src\thread\windows\SDL_sysrwlock_srw.c" />
-    <ClCompile Include="..\src\thread\windows\SDL_syssem.c" />
-    <ClCompile Include="..\src\thread\windows\SDL_systhread.c" />
-    <ClCompile Include="..\src\thread\windows\SDL_systls.c" />
+    <ClCompile Include="..\src\thread\windows\SDL_syssem.c">
+      <ObjectFileName>$(IntDir)\SDL_syssem1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\src\thread\windows\SDL_systhread.c">
+      <ObjectFileName>$(IntDir)\SDL_systhread1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\src\thread\windows\SDL_systls.c">
+      <ObjectFileName>$(IntDir)\SDL_systls1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\src\time\SDL_time.c" />
     <ClCompile Include="..\src\time\windows\SDL_systime.c" />
     <ClCompile Include="..\src\timer\SDL_timer.c" />

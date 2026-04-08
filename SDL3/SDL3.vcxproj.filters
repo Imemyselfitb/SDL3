@@ -787,7 +787,19 @@
     <ClCompile Include="..\src\thread\generic\SDL_syscond.c">
       <Filter>thread\generic</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\thread\generic\SDL_sysmutex.c">
+      <Filter>thread\generic</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\thread\generic\SDL_sysrwlock.c">
+      <Filter>thread\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\thread\generic\SDL_syssem.c">
+      <Filter>thread\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\thread\generic\SDL_systhread.c">
+      <Filter>thread\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\thread\generic\SDL_systls.c">
       <Filter>thread\generic</Filter>
     </ClCompile>
     <ClCompile Include="..\src\thread\windows\SDL_syscond_cv.c">

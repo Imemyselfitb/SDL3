@@ -30,6 +30,7 @@ project "SDL3"
 
 		-- Main
 		"src/main/SDL_main_callbacks.c",
+		"src/main/generic/**.c",
 		"src/core/*.c",
 
 		-- stdlib
@@ -88,6 +89,7 @@ project "SDL3"
 		
 		-- Thread
 		"src/thread/*.c",
+		"src/thread/generic/**.c",
 		
 		-- Time
 		"src/time/*.c",
@@ -106,7 +108,6 @@ project "SDL3"
 
 	defines { "SDL_STATIC" }
 
-
 	filter "system:windows"
 		defines { "_CRT_SECURE_NO_WARNINGS", "SDL_MAIN_HANDLED" }
 		systemversion "latest"
@@ -118,21 +119,36 @@ project "SDL3"
 		optimize "On"
 
 		includedirs { "src/hidapi/windows" }
+
+		links {
+			-- Core Platform libs
+			"kernel32",
+			"user32",
+			"gdi32",
+			"winmm",
+			"imm32",
+			"ole32",
+			"oleaut32",
+			"uuid",
+			"advapi32",
+			"setupapi",
+			"shell32",
+
+			-- Graphics
+			"d3d11",
+			"d3d12",
+		}
 	
 		-- Files only included on windows
 		files {
-			"src/*.c",
-
 			-- Main
 			"src/main/windows/**.c",
-			"src/main/generic/SDL_sysmain_callbacks.c",
 
 			-- Core
 			"src/core/windows/**.c",
 
 			-- Events
 			"src/io/windows/**.c",
-			"src/io/generic/SDL_asyncio_generic.c", -- Implementation not defined in io/windows
 			"src/sensor/windows/**.c",
 			"src/process/windows/**.c",
 
@@ -187,7 +203,13 @@ project "SDL3"
 		}
 
 	filter "system:linux"
-		defines { "_GNU_SOURCE", "HAVE_DBUS_DBUS_H=1", "HAVE_STDIO_H=1", "HAVE_XGENERICEVENTCOOKIE=1", "SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS=1" }
+		defines {
+			"_GNU_SOURCE",
+			"HAVE_DBUS_DBUS_H=1",
+			"HAVE_STDIO_H=1",
+			"HAVE_XGENERICEVENTCOOKIE=1",
+			"SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS=1"
+		}
 
 		cdialect "C17"
 		staticruntime "On"
@@ -200,38 +222,56 @@ project "SDL3"
 
 		-- Link against Linux system libraries
 		links {
+			-- Core Platform libs
 			"pthread",
 			"dl",
 			"m",
 			"rt",
+
+			-- Window/Graphics
 			"X11",
+			"Xext",
+			"Xcursor",
+			"Xi",
+			"Xfixes",
+			"Xrandr",
+
 			"wayland-client",
 			"wayland-egl",
+			"wayland-cursor",
+
 			"xkbcommon",
+
+			-- Audio
 			"asound",
-			"pulse"
+			"pulse",
+
+			-- Input
+			"udev",
 		}
 
 		files {
-			"src/*.c",
-
 			-- Core
 			"src/core/linux/**.c",
-        
+
+			-- IO
+			"src/io/unix/**.c",
+
 			-- Video (X11, Wayland, KMSDRM, etc.)
 			"src/video/x11/**.c",
 			"src/video/wayland/**.c",
 			"src/video/kmsdrm/**.c",
 			"src/video/dummy/**.c",
-        
+			
 			-- Audio (ALSA, Pulse, etc.)
 			"src/audio/alsa/**.c",
 			"src/audio/pulseaudio/**.c",
 			"src/audio/disk/**.c",
 			"src/audio/dummy/**.c",
-        
+			
 			-- Joystick / HID
 			"src/joystick/linux/**.c",
+			"src/joystick/evdev/**.c",
 			"src/hidapi/linux/**.c",
 
 			-- Haptic
@@ -243,12 +283,13 @@ project "SDL3"
 			-- Thread
 			"src/thread/pthread/**.c",
 
-			-- Timer
+			-- Time
+			"src/time/unix/**.c",
 			"src/timer/unix/**.c",
 
 			-- Filesystem
 			"src/filesystem/unix/**.c",
 
-			-- Misc
+			-- Dynamic Loading
 			"src/loadso/dlopen/**.c",
 		}

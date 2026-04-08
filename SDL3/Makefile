@@ -28,7 +28,7 @@ ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c17 `pkg-config --cflags dbus-1`
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 `pkg-config --cflags dbus-1`
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-LIBS += -lversion -limm32 -lwinmm -lsetupapi -lpthread -ldl -lm -lrt -lX11 -lwayland-client -lwayland-egl -lxkbcommon -lasound -lpulse
+LIBS += -lversion -limm32 -lwinmm -lsetupapi -lpthread -ldl -lm -lrt -lX11 -lXext -lXcursor -lXi -lXfixes -lXrandr -lwayland-client -lwayland-egl -lwayland-cursor -lxkbcommon -lasound -lpulse -ludev
 LDDEPS +=
 ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64 -s /NODEFAULTLIB `pkg-config --libs dbus-1`
 LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
@@ -226,18 +226,26 @@ GENERATED += $(OBJDIR)/SDL_string.o
 GENERATED += $(OBJDIR)/SDL_strtokr.o
 GENERATED += $(OBJDIR)/SDL_surface.o
 GENERATED += $(OBJDIR)/SDL_syscond.o
+GENERATED += $(OBJDIR)/SDL_syscond1.o
 GENERATED += $(OBJDIR)/SDL_sysfilesystem.o
 GENERATED += $(OBJDIR)/SDL_syshaptic.o
 GENERATED += $(OBJDIR)/SDL_sysjoystick.o
 GENERATED += $(OBJDIR)/SDL_sysloadso.o
+GENERATED += $(OBJDIR)/SDL_sysmain_callbacks.o
 GENERATED += $(OBJDIR)/SDL_sysmutex.o
+GENERATED += $(OBJDIR)/SDL_sysmutex1.o
 GENERATED += $(OBJDIR)/SDL_syspower.o
 GENERATED += $(OBJDIR)/SDL_sysrwlock.o
+GENERATED += $(OBJDIR)/SDL_sysrwlock1.o
 GENERATED += $(OBJDIR)/SDL_syssem.o
+GENERATED += $(OBJDIR)/SDL_syssem1.o
 GENERATED += $(OBJDIR)/SDL_system_theme.o
 GENERATED += $(OBJDIR)/SDL_systhread.o
+GENERATED += $(OBJDIR)/SDL_systhread1.o
+GENERATED += $(OBJDIR)/SDL_systime.o
 GENERATED += $(OBJDIR)/SDL_systimer.o
 GENERATED += $(OBJDIR)/SDL_systls.o
+GENERATED += $(OBJDIR)/SDL_systls1.o
 GENERATED += $(OBJDIR)/SDL_thread.o
 GENERATED += $(OBJDIR)/SDL_threadprio.o
 GENERATED += $(OBJDIR)/SDL_time.o
@@ -488,18 +496,26 @@ OBJECTS += $(OBJDIR)/SDL_string.o
 OBJECTS += $(OBJDIR)/SDL_strtokr.o
 OBJECTS += $(OBJDIR)/SDL_surface.o
 OBJECTS += $(OBJDIR)/SDL_syscond.o
+OBJECTS += $(OBJDIR)/SDL_syscond1.o
 OBJECTS += $(OBJDIR)/SDL_sysfilesystem.o
 OBJECTS += $(OBJDIR)/SDL_syshaptic.o
 OBJECTS += $(OBJDIR)/SDL_sysjoystick.o
 OBJECTS += $(OBJDIR)/SDL_sysloadso.o
+OBJECTS += $(OBJDIR)/SDL_sysmain_callbacks.o
 OBJECTS += $(OBJDIR)/SDL_sysmutex.o
+OBJECTS += $(OBJDIR)/SDL_sysmutex1.o
 OBJECTS += $(OBJDIR)/SDL_syspower.o
 OBJECTS += $(OBJDIR)/SDL_sysrwlock.o
+OBJECTS += $(OBJDIR)/SDL_sysrwlock1.o
 OBJECTS += $(OBJDIR)/SDL_syssem.o
+OBJECTS += $(OBJDIR)/SDL_syssem1.o
 OBJECTS += $(OBJDIR)/SDL_system_theme.o
 OBJECTS += $(OBJDIR)/SDL_systhread.o
+OBJECTS += $(OBJDIR)/SDL_systhread1.o
+OBJECTS += $(OBJDIR)/SDL_systime.o
 OBJECTS += $(OBJDIR)/SDL_systimer.o
 OBJECTS += $(OBJDIR)/SDL_systls.o
+OBJECTS += $(OBJDIR)/SDL_systls1.o
 OBJECTS += $(OBJDIR)/SDL_thread.o
 OBJECTS += $(OBJDIR)/SDL_threadprio.o
 OBJECTS += $(OBJDIR)/SDL_time.o
@@ -1010,6 +1026,9 @@ $(OBJDIR)/SDL_locale.o: ../src/locale/SDL_locale.c
 $(OBJDIR)/SDL_main_callbacks.o: ../src/main/SDL_main_callbacks.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_sysmain_callbacks.o: ../src/main/generic/SDL_sysmain_callbacks.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_url.o: ../src/misc/SDL_url.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
@@ -1178,25 +1197,46 @@ $(OBJDIR)/SDL_steamstorage.o: ../src/storage/steam/SDL_steamstorage.c
 $(OBJDIR)/SDL_thread.o: ../src/thread/SDL_thread.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_syscond.o: ../src/thread/pthread/SDL_syscond.c
+$(OBJDIR)/SDL_syscond.o: ../src/thread/generic/SDL_syscond.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysmutex.o: ../src/thread/pthread/SDL_sysmutex.c
+$(OBJDIR)/SDL_sysmutex.o: ../src/thread/generic/SDL_sysmutex.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_sysrwlock.o: ../src/thread/pthread/SDL_sysrwlock.c
+$(OBJDIR)/SDL_sysrwlock.o: ../src/thread/generic/SDL_sysrwlock.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_syssem.o: ../src/thread/pthread/SDL_syssem.c
+$(OBJDIR)/SDL_syssem.o: ../src/thread/generic/SDL_syssem.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_systhread.o: ../src/thread/pthread/SDL_systhread.c
+$(OBJDIR)/SDL_systhread.o: ../src/thread/generic/SDL_systhread.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/SDL_systls.o: ../src/thread/pthread/SDL_systls.c
+$(OBJDIR)/SDL_systls.o: ../src/thread/generic/SDL_systls.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_syscond1.o: ../src/thread/pthread/SDL_syscond.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_sysmutex1.o: ../src/thread/pthread/SDL_sysmutex.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_sysrwlock1.o: ../src/thread/pthread/SDL_sysrwlock.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_syssem1.o: ../src/thread/pthread/SDL_syssem.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_systhread1.o: ../src/thread/pthread/SDL_systhread.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_systls1.o: ../src/thread/pthread/SDL_systls.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_time.o: ../src/time/SDL_time.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SDL_systime.o: ../src/time/unix/SDL_systime.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SDL_timer.o: ../src/timer/SDL_timer.c
